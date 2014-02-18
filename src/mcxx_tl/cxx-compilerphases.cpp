@@ -53,6 +53,8 @@
 #include "tl-nodecl.hpp"
 #include "codegen-phase.hpp"
 
+#include <iostream>
+
 namespace TL
 {
     class CompilerPhaseRunner
@@ -718,6 +720,7 @@ extern "C"
 
         codegen_phase->push_scope(decl_context);
         std::string str = codegen_phase->codegen_to_str(node, TL::Scope(decl_context));
+        std::cout << str << std::endl;
         codegen_phase->pop_scope();
 
         return uniquestr(str.c_str());
