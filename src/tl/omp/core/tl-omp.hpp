@@ -494,8 +494,10 @@ namespace OpenMP
 
                 const locus_t* _locus;
 
+                bool _store_ast;
+
             public:
-                FunctionTaskInfo() : _untied(false) { }
+                FunctionTaskInfo() : _untied(false), _store_ast(false) { }
 
                 FunctionTaskInfo(Symbol sym,
                         ObjectList<FunctionTaskDependency> parameter_info);
@@ -555,6 +557,8 @@ namespace OpenMP
 
                 void module_write(ModuleWriter& mw);
                 void module_read(ModuleReader& mr);
+
+                void set_store_ast();
         };
 
         class LIBTL_CLASS FunctionTaskSet : public TL::Object

@@ -315,7 +315,8 @@ namespace TL
                 ObjectList<FunctionTaskDependency> parameter_info)
             : _sym(sym),
             _parameters(parameter_info),
-            _implementation_table()
+            _implementation_table(),
+            _store_ast(false)
         {
         }
 
@@ -324,7 +325,8 @@ namespace TL
                 Nodecl::Utils::SimpleSymbolMap& translation_map,
                 TL::Symbol function_sym) :
             _sym(function_sym),
-            _untied(task_info._untied)
+            _untied(task_info._untied),
+            _store_ast(false)
         {
             // Copy the implementations table
             ERROR_CONDITION(_implementation_table.size() > 1,
@@ -571,6 +573,11 @@ namespace TL
         bool FunctionTaskInfo::get_untied() const
         {
             return _untied;
+        }
+
+        void FunctionTaskInfo::set_store_ast(void)
+        {
+        	_store_ast = true;
         }
 
         void FunctionTaskInfo::module_write(ModuleWriter& mw)
@@ -1198,6 +1205,12 @@ namespace TL
                 << ": note: adding task function '" << function_sym.get_name() << "'" << std::endl;
             _function_task_set->add_function_task(function_sym, task_info);
 
+            PragmaCustomClause store_ast_clause = pragma_line.get_clause("store_ast");
+            if (store_ast_clause.is_defined())
+            {
+            	task_info.set_store_ast();
+            }
+
             FORTRAN_LANGUAGE()
             {
                 static bool already_nagged = false;
@@ -1279,6 +1292,7 @@ namespace TL
 
             //looking for release_deadline clause
             PragmaCustomClause release_clause = construct.get_clause("release_after");
+            construct.get_clause("store_ast");
             if (release_clause.is_defined())
             {
                 ObjectList<Nodecl::NodeclBase> release_exprs =
