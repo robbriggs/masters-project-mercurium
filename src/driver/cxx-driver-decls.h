@@ -200,6 +200,10 @@ typedef struct parameter_flags_tag
     char value;
 } parameter_flags_t;
 
+// LibClang forward declares
+struct CXIndex;
+struct CXTranslationUnit;
+
 typedef struct compilation_process_tag
 {
     // Result of the execution
@@ -241,6 +245,10 @@ typedef struct compilation_process_tag
     // The compiler will switch these because compilation is always serialized (never nest it!)
     struct compilation_file_process_tag* current_file_process;
     struct compilation_configuration_tag *current_compilation_configuration;
+
+    // Serialized AST data
+    struct CXIndex* clang_index;
+    struct CXTranslationUnit* clang_translationunit;
 } compilation_process_t;
 
 typedef struct compilation_configuration_conditional_flags
