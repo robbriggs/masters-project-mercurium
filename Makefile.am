@@ -2273,6 +2273,8 @@ src_driver_plaincxx_CFLAGS += -I$(top_srcdir)/src/frontend/fortran \
 
 
 src_driver_plaincxx_SOURCES = \
+  src/driver/cxx-generateserializedast.h \
+  src/drive/cxx-generateserializedast.c \
   src/driver/cxx-configfile.h \
   src/driver/cxx-configfile.c \
   src/driver/cxx-configoptions.c \
