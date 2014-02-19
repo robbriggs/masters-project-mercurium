@@ -508,6 +508,14 @@ then
            ]
    )
 
+   AC_ARG_WITH([llvm],
+           AS_HELP_STRING([--with-llvm=dir], [Directory of LLVM installation]),
+           [
+            llvm_include="${withval}/include"
+            llvm_lib="${withval}/lib"
+           ]
+   )
+
    if test x$nanox_mic_include = x -o x$nanox_mic_lib = x;
    then
            nanox_mic_include=$nanox_include
@@ -546,6 +554,9 @@ then
 
    NANOX_INCLUDES="${nanox_include}"
    NANOX_LIBS="${nanox_lib}"
+
+   LLVM_INCLUDES="${llvm_include}"
+   LLVM_LIBS="${llvm_lib}"
 
    COMPILER_NAMES="${COMPILER_NAMES} mcc mcxx"
 
@@ -591,6 +602,8 @@ AC_SUBST([NANOX_MIC_INCLUDES])
 AC_SUBST([NANOX_MIC_LIBS])
 AC_SUBST([NANOX_MIC_INSTRUMENTATION])
 AC_SUBST([MIC_TOOLS])
+AC_SUBST([LLVM_INCLUDES])
+AC_SUBST([LLVM_LIBS])
 
 dnl SIMD Support
 

@@ -2269,12 +2269,13 @@ src_driver_plaincxx_CFLAGS += -I$(top_srcdir)/src/frontend/fortran \
                               -I$(top_srcdir)/src/driver \
                               -I$(top_srcdir)/src/driver/fortran \
                               -I$(top_builddir)/src/driver \
-                              -I$(top_builddir)/src/driver/fortran
+                              -I$(top_builddir)/src/driver/fortran \
+                              -I@LLVM_INCLUDES@
 
 
 src_driver_plaincxx_SOURCES = \
   src/driver/cxx-generateserializedast.h \
-  src/drive/cxx-generateserializedast.c \
+  src/driver/cxx-generateserializedast.c \
   src/driver/cxx-configfile.h \
   src/driver/cxx-configfile.c \
   src/driver/cxx-configoptions.c \
@@ -2593,6 +2594,7 @@ config_edit = \
      -e 's|@ACOTES_MSF_INCLUDES[@]|$(ACOTES_MSF_INCLUDES)|g' \
      -e 's|@ACOTES_MSF_LIBS[@]|$(ACOTES_MSF_LIBS)|g' \
      -e 's|@NANOX_INCLUDES[@]|$(NANOX_INCLUDES)|g' \
+     -e 's|@LLVM_INCLUDES[@]|$(LLVM_INCLUDES)|g' \
      -e 's|@NANOX_LIBS[@]|$(NANOX_LIBS)|g' \
      -e 's|@NANOX_MIC_INCLUDES[@]|$(NANOX_MIC_INCLUDES)|g' \
      -e 's|@NANOX_MIC_LIBS[@]|$(NANOX_MIC_LIBS)|g' \
