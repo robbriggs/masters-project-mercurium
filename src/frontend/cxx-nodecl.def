@@ -523,6 +523,7 @@ exec-environment : NODECL_OPEN_M_P*IF([condition]expression)
                  | NODECL_OPEN_M_P*COMMUTATIVE([inout_deps]expression-seq)
                  | NODECL_OPEN_M_P*SCHEDULE([chunk]expression-opt) text
                  | NODECL_OPEN_M_P*TARGET([devices] text-seq, [items] target-item-seq-opt)
+                 | NODECL_OPEN_M_P*STOREIR()
 # Used for parallel + {sections,for}
                  | NODECL_OPEN_M_P*COMBINED_WORKSHARING()
                  | NODECL_OPEN_M_P*PRIORITY([priority]expression)
@@ -538,6 +539,7 @@ exec-environment : NODECL_OPEN_M_P*IF([condition]expression)
                  | NODECL_OPEN_M_P*MASK()
                  | NODECL_OPEN_M_P*NO_MASK()
                  | NODECL_OPEN_M_P*FUNCTION_TASK_PARSING_CONTEXT([context]pragma-context)
+
 
 target-item : NODECL_OPEN_M_P*COPY_IN([input_copies]expression-seq)
                  | NODECL_OPEN_M_P*COPY_OUT([output_copies]expression-seq)
