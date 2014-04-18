@@ -36,6 +36,13 @@
 #include "tl-counters.hpp"
 #include "config.h"
 
+#include "codegen-cxx.hpp"
+#include "tl-compilerpipeline.hpp"
+#include "tl-omp-storeast.hpp"
+
+#include <errno.h>
+#include <string.h>
+
 namespace TL { namespace OpenMP {
 
     Base::Base()
@@ -151,6 +158,18 @@ namespace TL { namespace OpenMP {
 
     void Base::phase_cleanup(DTO& data_flow)
     {
+        std::string original_filename = TL::CompilationProcess::get_current_file().get_filename();
+        //std::string outputfile = data_flow["output_file"];
+        std::cout << "CLEANING BASE" << std::endl;
+
+
+        //std::cout << (std::string)(obj) << std::endl;
+
+        
+        //std::string transformed_file = CURRENT_COMPILED_FILE->output_filename;
+        
+        //StoreAST::generateIRFile(transformed_file, "transformed_file.c");
+
         _core.phase_cleanup(data_flow);
     }
 
@@ -501,6 +520,10 @@ namespace TL { namespace OpenMP {
             execution_environment.append(Nodecl::OpenMP::Final::make(expr_list[0].shallow_copy()));
         }
 
+        PragmaCustomClause storeast_clause = pragma_line.get_clause("storeir");
+        if (storeast_clause.is_defined())
+            execution_environment.append(Nodecl::OpenMP::Storeir::make());
+
         pragma_line.diagnostic_unused_clauses();
 
         Nodecl::NodeclBase async_code =
@@ -509,6 +532,7 @@ namespace TL { namespace OpenMP {
                     directive.get_locus());
 
         directive.replace(async_code);
+
     }
 
     void Base::parallel_handler_pre(TL::PragmaCustomStatement)

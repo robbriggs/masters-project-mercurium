@@ -336,7 +336,6 @@ src_frontend_libmcxx_la_LDFLAGS = $(dll_exports) -avoid-version $(no_undefined)
 
 src_frontend_libmcxx_la_CFLAGS = -DLIBMCXX_DLL_EXPORT \
                     -Wall \
-					-Wshadow \
 					-Wextra \
 					-std=gnu99 \
 				    -I$(top_srcdir)/lib \
@@ -1020,7 +1019,7 @@ src_tl_libtl_la_LIBADD = \
 	$(END)
 
 ## TL common flags
-tl_cflags= -Wall -Wshadow \
+tl_cflags= -Wall \
     -I $(top_srcdir)/src/tl/codegen/common \
     -I $(top_srcdir)/src/tl/codegen/vector \
     -I $(top_srcdir)/src/tl/codegen/base/cxx \
@@ -1043,6 +1042,8 @@ tl_cflags= -Wall -Wshadow \
     -I $(top_builddir)/src/frontend/fortran \
     -I $(top_builddir)/src/driver \
     -I $(top_builddir)/lib \
+    -I @LLVM_INCLUDES@ \
+    -DNDEBUG -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS \
 	$(END)
 
 
@@ -1473,6 +1474,8 @@ src_tl_omp_base_libtlomp_base_la_SOURCES = \
    src/tl/omp/base/tl-omp-base.cpp \
    src/tl/omp/base/tl-omp-base-task.hpp \
    src/tl/omp/base/tl-omp-base-task.cpp \
+   src/tl/omp/base/tl-omp-storeast.cpp \
+   src/tl/omp/base/tl-omp-storeast.hpp \
    $(END)
 
 ##########################################################################
@@ -2269,9 +2272,7 @@ src_driver_plaincxx_CFLAGS += -I$(top_srcdir)/src/frontend/fortran \
                               -I$(top_srcdir)/src/driver \
                               -I$(top_srcdir)/src/driver/fortran \
                               -I$(top_builddir)/src/driver \
-                              -I$(top_builddir)/src/driver/fortran \
-                              -I@LLVM_INCLUDES@
-
+                              -I$(top_builddir)/src/driver/fortran
 
 src_driver_plaincxx_SOURCES = \
   src/driver/cxx-generateserializedast.h \

@@ -94,6 +94,8 @@
 #include "fortran03-typeenviron.h"
 #include "cxx-driver-fortran.h"
 
+extern void generate_llvm_link(char *file, void *list);
+
 /* ------------------------------------------------------------------ */
 #define HELP_STRING \
 "Options: \n" \
@@ -566,6 +568,7 @@ int main(int argc, char* argv[])
             compilation_process.argv, 
             /* from_command_line= */ 1,
             /* parse_implicits_only */ 1);
+    compilation_process.current_compilation_configuration->functions_to_generate_ir_for = NULL;
 
     // This commits the profiles using the implicit parameters passed in the
     // command line that we have just fetched.  Committing a profile means
@@ -3893,6 +3896,20 @@ static void native_compilation(translation_unit_t* translation_unit,
 
     timing_t timing_compilation;
     timing_start(&timing_compilation);
+
+    char ir_file[100];
+    strcpy(ir_file, output_object_filename);
+	strcat(ir_file, ".omp.c");
+
+    //ld -r -b binary -o example.o example.jpg
+    char* cp_args[7];
+    cp_args[0] = prettyprinted_filename;
+    cp_args[1] = ir_file;
+    cp_args[2] = NULL;
+    execute_program("cp", cp_args);
+
+
+
 
     if (execute_program(CURRENT_CONFIGURATION->native_compiler_name, native_compilation_args) != 0)
     {

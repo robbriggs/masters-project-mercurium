@@ -1344,6 +1344,7 @@ void LoweringVisitor::visit_task_call_c(
             updated_final_condition,
             task_environment.task_label,
             task_environment.is_untied,
+            false,
             arguments_outline_info,
             &parameters_outline_info,
             placeholder_task_expr_transformation);
@@ -1881,6 +1882,7 @@ void LoweringVisitor::visit_task_call_fortran(
             task_environment.final_condition,
             task_environment.task_label,
             task_environment.is_untied,
+            false,
             new_outline_info,
             /* parameter outline info */ NULL,
             placeholder_task_expr_transformation);

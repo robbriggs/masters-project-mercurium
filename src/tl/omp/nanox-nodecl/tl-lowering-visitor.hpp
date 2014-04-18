@@ -81,6 +81,7 @@ class LoweringVisitor : public Nodecl::ExhaustiveVisitor<void>
                 Nodecl::NodeclBase final_condition,
                 Nodecl::NodeclBase task_label,
                 bool is_untied,
+                bool storeir,
                 OutlineInfo& outline_info,
                 OutlineInfo* parameter_outline_info,
                 Nodecl::NodeclBase* placeholder_task_expr_transformation);

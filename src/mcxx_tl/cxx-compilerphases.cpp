@@ -700,6 +700,7 @@ extern "C"
 
     void run_codegen_phase(FILE *out_file, translation_unit_t* translation_unit)
     {
+        std::cout << "Start of run_code\n";
         TL::DTO* _dto = reinterpret_cast<TL::DTO*>(translation_unit->dto);
         TL::DTO& dto = *_dto;
 
@@ -709,6 +710,7 @@ extern "C"
         dto.set_object("output_file", output_file);
 
         codegen_phase->run(dto);
+        std::cout << "End of run_code\n";
     }
 
     const char* codegen_to_str(nodecl_t node, decl_context_t decl_context)
@@ -720,7 +722,6 @@ extern "C"
 
         codegen_phase->push_scope(decl_context);
         std::string str = codegen_phase->codegen_to_str(node, TL::Scope(decl_context));
-        std::cout << str << std::endl;
         codegen_phase->pop_scope();
 
         return uniquestr(str.c_str());

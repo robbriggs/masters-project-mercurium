@@ -123,4 +123,14 @@ namespace TL {
     }
 }
 
+extern "C"
+{
+
+void generate_llvm_link(char *file, void *list)
+{
+   std::cout << "I do actually get here\n";
+}
+
+}
+
 EXPORT_PHASE(TL::Nanox::NanosMain)

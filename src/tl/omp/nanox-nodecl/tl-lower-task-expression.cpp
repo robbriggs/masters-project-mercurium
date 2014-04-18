@@ -59,6 +59,8 @@ void LoweringVisitor::visit(const Nodecl::OpenMP::TaskExpression& task_expr)
             << "}"
             ;
 
+        std::cout << "In expression\n";
+
         if (IS_FORTRAN_LANGUAGE)
             Source::source_language = SourceLanguage::C;
 

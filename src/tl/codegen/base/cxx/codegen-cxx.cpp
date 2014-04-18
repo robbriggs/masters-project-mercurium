@@ -42,7 +42,73 @@ MCXX_END_DECLS
 #include "tl-nodecl-utils.hpp"
 
 #include "cxx-printscope.h"
+#include <sstream>
+
 namespace Codegen {
+
+class ComposeStream: public std::ostream
+{
+    struct ComposeBuffer: public std::streambuf
+    {
+        void addBuffer(std::streambuf* buf)
+        {
+            bufs.push_back(buf);
+        }
+        virtual int overflow(int c)
+        {
+            std::for_each(bufs.begin(),bufs.end(),std::bind2nd(std::mem_fun(&std::streambuf::sputc),c));
+            return c;
+        }
+
+        private:
+            std::vector<std::streambuf*>    bufs;
+
+    };
+    ComposeBuffer myBuffer;
+    public:
+        ComposeStream()
+            :std::ostream(NULL)
+        {
+            std::ostream::rdbuf(&myBuffer);
+        }
+        void linkStream(std::ostream* out)
+        {
+            out->flush();
+            myBuffer.addBuffer(out->rdbuf());
+        }
+};
+
+class snoopstream : public ComposeStream
+{
+private:
+  std::stringstream ss;
+public:
+  snoopstream(std::ostream* out, bool cout = false)
+  {
+    linkStream(out);
+    linkStream(&ss);
+    if (cout)
+    {
+      linkStream(&std::cout);
+    }
+  }
+
+  std::string str() const
+  {
+    return ss.str();
+  }
+
+  static std::ostream* n(std::ostream* o, bool cout = false)
+  {
+    return dynamic_cast<std::ostream*>(new snoopstream(o, cout));
+  }
+
+  static std::string print(const std::ostream* os)
+  {
+    const snoopstream* ss = dynamic_cast<const snoopstream*>(os);
+    return ss->str();
+  }
+};
 
 void CxxBase::codegen(const Nodecl::NodeclBase &n, std::ostream* out)
 {

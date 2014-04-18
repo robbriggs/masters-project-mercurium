@@ -503,6 +503,7 @@ void LoweringVisitor::emit_async_common(
         Nodecl::NodeclBase final_condition,
         Nodecl::NodeclBase task_label,
         bool is_untied,
+        bool storeir,
 
         OutlineInfo& outline_info,
 
@@ -588,6 +589,7 @@ void LoweringVisitor::emit_async_common(
     std::string wd_description  = (is_function_task) ?
         called_task.get_name() : current_function.get_name();
 
+
     const_wd_info << fill_const_wd_info(
             struct_arg_type_name,
             is_untied,
@@ -649,6 +651,7 @@ void LoweringVisitor::emit_async_common(
             implementor_symbol : TL::Symbol::invalid();
 
         Nodecl::NodeclBase task_statements = statements;
+
         if (is_function_task
                 && called_task != implementor_symbol)
         {
@@ -695,9 +698,13 @@ void LoweringVisitor::emit_async_common(
 
             outline_placeholder.replace(outline_statements_code);
 
+
             delete symbol_map;
         }
     }
+
+    std::string the_outline_name = (*implementation_table.begin()).second.get_outline_name();
+    //_extra_c_code();
 
     // In Fortran we don't need to remove the function task from the original source because:
     //  - The function task is a smp task, or
@@ -747,6 +754,32 @@ void LoweringVisitor::emit_async_common(
         if_condition_end_opt << "}";
     }
 
+    std::string strrr = outline_info._funct_symbol.get_qualified_name();
+
+    Source blob_start_address_name, blob_size_address_name;
+
+    if (storeir)
+    {
+        blob_start_address_name << "_binary_" << the_outline_name << "_start";
+        blob_size_address_name << "_binary_" << the_outline_name << "_size";
+        {
+            Source blob_decl;
+            blob_decl << "extern char " << blob_start_address_name << "[];"
+                    << "extern int "<< blob_size_address_name << ";"
+                    ;
+            Nodecl::NodeclBase binary_decls = blob_decl.parse_global(construct);
+            Nodecl::Utils::prepend_to_enclosing_top_level_location(construct, binary_decls);
+        }
+
+        
+
+        if (CURRENT_CONFIGURATION->functions_to_generate_ir_for == NULL)
+            CURRENT_CONFIGURATION->functions_to_generate_ir_for = new std::vector<std::string>;
+
+        std::vector<std::string> *func_list = static_cast<std::vector<std::string> *>(CURRENT_CONFIGURATION->functions_to_generate_ir_for);
+        func_list->push_back(the_outline_name);
+    }
+
     Source num_dependences;
     // Spawn code
     spawn_code
@@ -762,8 +795,19 @@ void LoweringVisitor::emit_async_common(
         <<     "nanos_err_t " << err_name <<";"
         <<     if_condition_begin_opt
         <<     err_name << " = nanos_create_wd_compact(&nanos_wd_, &(nanos_wd_const_data.base), &nanos_wd_dyn_props, "
-        <<                 struct_size << ", (void**)&ol_args, nanos_current_wd(),"
-        <<                 copy_ol_arg << ");"
+        <<                           struct_size << ", (void**)&ol_args, nanos_current_wd(),"
+        <<                           copy_ol_arg << ", ";
+
+    if (storeir)
+    {
+        spawn_code
+        <<                           blob_start_address_name << "," << blob_size_address_name << ",\"" << the_outline_name << "\");";
+    } else {
+        spawn_code
+        <<                           "0, 0, \"\");";
+    }
+        
+    spawn_code
         <<     "if (" << err_name << " != NANOS_OK) nanos_handle_error (" << err_name << ");"
         <<     if_condition_end_opt
         <<     update_alloca_decls_opt
@@ -950,7 +994,7 @@ void LoweringVisitor::visit_task(
             <<      "}"
             << "}"
             ;
-
+            
         if (IS_FORTRAN_LANGUAGE)
             Source::source_language = SourceLanguage::C;
 
@@ -967,6 +1011,7 @@ void LoweringVisitor::visit_task(
     }
 
     Symbol called_task_dummy = Symbol::invalid();
+
     emit_async_common(
             new_construct,
             function_symbol,
@@ -977,6 +1022,7 @@ void LoweringVisitor::visit_task(
             task_environment.final_condition,
             task_environment.task_label,
             task_environment.is_untied,
+            task_environment.store_ir,
 
             outline_info,
             /* parameter_outline_info */ NULL,
@@ -1907,7 +1953,7 @@ void LoweringVisitor::fill_copies_region(
                             << "   nanos::omemstream* buff_ptr=(nanos::omemstream*) buff; "
                             << "   (("<< sym_serializer.get_qualified_name() << "*)this_)->serialize(*buff_ptr); "
                             << "} ;";
-                    
+
                     serialize_adapters << "static void " << serialize_prefix_name << "_ser_assign_adapter(void* this_, void* buff)"
                             << "{"
                             << "  nanos::imemstream* buff_ptr=(nanos::imemstream*) buff; "

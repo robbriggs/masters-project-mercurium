@@ -35,6 +35,7 @@ struct TaskEnvironmentVisitor : public Nodecl::ExhaustiveVisitor<void>
         // These attributes apply for all kinds of tasks (inline task and
         // function tasks)
         bool is_untied;
+        bool store_ir;
         Nodecl::NodeclBase priority;
 
         // This attribute only for function task. Inline tasks will never have
@@ -48,6 +49,7 @@ struct TaskEnvironmentVisitor : public Nodecl::ExhaustiveVisitor<void>
 
         TaskEnvironmentVisitor()
             : is_untied(false),
+            store_ir(false),
             priority(),
             if_condition(),
             final_condition(),
@@ -78,6 +80,11 @@ struct TaskEnvironmentVisitor : public Nodecl::ExhaustiveVisitor<void>
         void visit(const Nodecl::OpenMP::TaskLabel& task_label_)
         {
             this->task_label = task_label_;
+        }
+
+        void visit(const Nodecl::OpenMP::Storeir & store_ir_)
+        {
+            this->store_ir = true;
         }
 };
 

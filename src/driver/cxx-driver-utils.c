@@ -346,12 +346,14 @@ static int execute_program_flags_unix(const char* program_name, const char** arg
     const char** execvp_arguments = xcalloc(num + 1 + 1, sizeof(char*));
 
     execvp_arguments[0] = program_name;
-
+    printf("Executing %s", program_name);
     int i;
     for (i = 0; i < num; i++)
     {
         execvp_arguments[i+1] = arguments[i];
+        printf(" %s", arguments[i]);
     }
+    printf("\n");
 
     execvp_arguments[i+1] = NULL;
 
